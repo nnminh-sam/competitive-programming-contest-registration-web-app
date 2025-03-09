@@ -1,0 +1,203 @@
+* {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+.app-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.top-section {
+  display: flex;
+  background-color: #fff;
+}
+
+.container {
+  display: flex;
+}
+
+.image-section {
+  flex: 1;
+  overflow: hidden;
+}
+
+.image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.registration-form-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: #fff;
+}
+
+@media screen and (max-width: 1024px) {
+  .top-section {
+    flex-direction: column;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .image-section {
+    height: 30vh;
+  }
+
+  .registration-form-container {
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .registration-form-container {
+    padding: 1rem;
+  }
+
+  .form-component input,
+  .form-component select {
+    padding: 0.5rem;
+  }
+
+  button[type="submit"] {
+    padding: 0.5rem;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+}
+
+.form-component {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-component label {
+  font-weight: 500;
+  color: #333;
+  letter-spacing: -0.01em;
+}
+
+.form-component input,
+.form-component select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.form-component .error {
+  color: #e53e3e;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+button[type="submit"] {
+  padding: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button[type="submit"]:hover {
+  background-color: #1d4ed8;
+}
+
+button[type="submit"]:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.form-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+  text-align: center;
+  letter-spacing: -0.025em;
+}
+
+.contests-section {
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 2rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: -0.025em;
+}
+
+.contests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.contest-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.contest-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contest-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.contest-description {
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.contest-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.contest-date {
+  font-weight: 500;
+}
+
+@media screen and (max-width: 768px) {
+  .contests-section {
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .contests-grid {
+    grid-template-columns: 1fr;
+  }
+}
