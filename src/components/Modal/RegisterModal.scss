@@ -1,0 +1,42 @@
+@import "../../styles/functions.scss";
+
+.confirmation-modal {
+  .ant-modal-content {
+    border: 0.125rem solid var(--grey-800);
+    border-bottom-width: 0.25rem;
+    box-shadow: 0.325rem 0.325rem 0 0 #00000040;
+    border-radius: 0.75rem;
+    padding: 0 !important;
+    width: 25rem;
+
+    .ant-modal-header {
+      border-bottom: 1px solid var(--grey-100);
+      margin-bottom: 1.125rem;
+      padding: 0 0.75rem;
+    }
+
+    .ant-modal-body {
+      padding: 0;
+    }
+  }
+
+  button.cancel-btn {
+    color: var(--accent-red);
+  }
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 -0.75rem;
+    padding: 0 0.75rem;
+    border-bottom: 1px solid var(--grey-100);
+
+    .title {
+      font-size: pxToRem(16) !important;
+      font-weight: 600;
+      color: var(--grey-800);
+    }
+  }
+}

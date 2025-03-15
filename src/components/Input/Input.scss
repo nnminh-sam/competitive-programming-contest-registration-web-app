@@ -1,0 +1,42 @@
+.input-container {
+  &.bordered {
+    .input {
+      border: 1px solid var(--grey-100);
+      border-radius: 0.5rem;
+      background: white;
+      padding: 0.5rem;
+    }
+  }
+
+  .input {
+    outline: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0;
+
+    height: 2.5rem;
+
+    input {
+      border-radius: 0.5rem;
+      outline: none;
+      height: 100%;
+      width: 100%;
+
+      &::placeholder {
+        font-size: 0.875rem;
+        letter-spacing: 0.5;
+        font-weight: 400;
+      }
+
+      &[type="number"]::-webkit-inner-spin-button,
+      &[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+
+  .input-error {
+    color: var(--accent-red);
+    font-size: 0.75rem;
+  }
+}

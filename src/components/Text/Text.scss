@@ -1,0 +1,110 @@
+.text {
+  color: inherit;
+
+  &.headline-4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  &.headline-5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &.title-1 {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  &.title-2 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &.title-3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  &.title-4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  &.body-2 {
+    font-size: 0.875rem;
+  }
+
+  &.body-3 {
+    font-size: 0.75rem;
+  }
+
+  &.text-200 {
+    color: var(--grey-200);
+  }
+
+  &.text-300 {
+    color: var(--grey-300);
+  }
+
+  &.text-400 {
+    color: var(--grey-400);
+  }
+
+  &.text-500 {
+    color: var(--grey-500);
+  }
+
+  &.text-600 {
+    color: var(--grey-600);
+  }
+
+  &.text-700 {
+    color: var(--grey-700);
+  }
+
+  &.text-800 {
+    color: var(--grey-800);
+  }
+
+  &.text-primary {
+    color: var(--primary);
+  }
+
+  &.text-primary-100 {
+    color: var(--primary-100);
+  }
+
+  &.text-primary-50 {
+    color: var(--primary-50);
+  }
+
+  &.text-accent-red {
+    color: var(--accent-red);
+  }
+
+  &.text-accent-blue {
+    color: var(--accent-blue);
+  }
+
+  &.text-accent-green {
+    color: var(--accent-green);
+  }
+
+  &.text-accent-violet {
+    color: var(--accent-violet);
+  }
+
+  &.text-accent-yellow {
+    color: var(--accent-yellow);
+  }
+
+  &.text-white {
+    color: white;
+  }
+
+  &.text-white-50 {
+    color: white;
+    opacity: 0.7;
+  }
+}
