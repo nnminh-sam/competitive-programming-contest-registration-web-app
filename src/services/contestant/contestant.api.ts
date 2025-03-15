@@ -46,8 +46,24 @@ const deleteContestant = async (id: string) => {
     return null;
   }
 };
+
+const getParticipatedContests = async () => {
+  try {
+    const res = await Api.get("v1/contestants/participated-contests");
+    if (res.status === 200) {
+      setRecoil(ContestantAtom.participatedContests, res.data.data);
+      return res.data;
+    }
+    message.error(res.data.message);
+    return null;
+  } catch (error: any) {
+    message.error(error.message);
+    return null;
+  }
+};
 export default {
   getMe,
   updateContestant,
   deleteContestant,
+  getParticipatedContests
 };

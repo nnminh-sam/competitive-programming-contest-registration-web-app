@@ -12,14 +12,14 @@ import { message } from "antd";
 
 export interface CardProps extends Partial<Contest> {
   className?: string;
+  is_registered?: boolean;
 }
 
 const Card: FC<CardProps> = (props) => {
-  const { className, name, banner, duration, type, id } = props;
+  const { className, name, banner, duration, type, id, is_registered } = props;
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const constestant = useRecoilValue(ContestantAtom.curentContestant);
   const [isRegistered, setIsRegistered] = useState(false);
-  console.log("🚀 ~ constestant:", constestant);
 
   const typeColors = useMemo(() => {
     return type === "Team"
@@ -74,15 +74,16 @@ const Card: FC<CardProps> = (props) => {
             {name}
           </Text>
         </div>
-        <div className="absolute bottom-[3%]">
-          <Button
-            disabled={isRegistered}
-            onClick={() => setIsRegisterModalOpen(true)}
-            className="mt-2 w-full"
-          >
-            Register
-          </Button>
-        </div>
+        {!is_registered && !isRegistered && (
+          <div className="absolute bottom-[3%]">
+            <Button
+              onClick={() => setIsRegisterModalOpen(true)}
+              className="mt-2 w-full"
+            >
+              Register
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Register Modal */}

@@ -15,12 +15,18 @@ import Card from "../../components/Card/Card";
 import { Contest, ContestApi } from "../../services/contest";
 import Colors from "../../constants/color";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import ContestantAtom from "../../services/contestant/contestant.atom";
 
 const Homepage: FC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [contestList, setContestList] = useState<Contest[]>([]);
-  console.log("🚀 ~ contestList:", contestList);
+  const participatedContests = useRecoilValue(
+    ContestantAtom.participatedContests
+  );
+
   const nav = useNavigate();
+
   useEffect(() => {
     const fetchContestList = async () => {
       const contestList = await ContestApi.getList({
@@ -33,6 +39,17 @@ const Homepage: FC = () => {
     };
     fetchContestList();
   }, []);
+
+  // Filtering the contests
+  const participatedContestIds = new Set(participatedContests.map((c) => c.id));
+
+  const participated = contestList.filter((contest) =>
+    participatedContestIds.has(contest.id)
+  );
+
+  const upcoming = contestList.filter(
+    (contest) => !participatedContestIds.has(contest.id)
+  );
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col px-6 py-8 gap-6">
@@ -57,7 +74,6 @@ const Homepage: FC = () => {
             theme="light"
             mode="inline"
             className="rounded-xl"
-            // defaultSelectedKeys={["1"]}
             items={[
               {
                 key: "1",
@@ -75,15 +91,54 @@ const Homepage: FC = () => {
             ]}
           />
         </Sider>
+
         <div className="bg-white flex-1 rounded-xl px-4 py-6">
-          <Text type="headline-4" color={Colors.PRIMARY_BLUE} className="mb-4">
-            Contests
-          </Text>
-          <div className="flex flex-wrap gap-4 justify-start">
-            {contestList.map((contest) => (
-              <Card className="w-[30%]" key={contest.id} {...contest} />
-            ))}
-          </div>
+          {/* Participated Contests Section */}
+          {participated.length > 0 && (
+            <>
+              <Text
+                type="headline-4"
+                color={Colors.PRIMARY_BLUE}
+                className="mb-4"
+              >
+                Participated Contests
+              </Text>
+
+              <div className="flex flex-wrap gap-4 justify-start mb-6">
+                {participated.map((contest) => (
+                  <Card
+                    className="w-[30%]"
+                    key={contest.id}
+                    {...contest}
+                    is_registered={true}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Upcoming Contests Section */}
+          {upcoming.length > 0 && (
+            <>
+              <Text
+                type="headline-4"
+                color={Colors.PRIMARY_BLUE}
+                className="mb-2"
+              >
+                Upcoming Contests
+              </Text>
+              <div className="flex flex-wrap gap-4 justify-start">
+                {upcoming.map((contest) => (
+                  <Card
+                    className="w-[30%]"
+                    key={contest.id}
+                    {...contest}
+                    is_registered={false}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

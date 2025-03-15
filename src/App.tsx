@@ -15,6 +15,10 @@ const App: FC = () => {
     const fetchSchoolYearList = async () => {
       await AffiliationApi.getList({ page: 1, limit: 100 });
     };
+    const fetchParticipatedContest = async () => {
+      await ContestantApi.getParticipatedContests();
+    };
+    fetchParticipatedContest();
     fetchSchoolYearList();
   }, []);
 
