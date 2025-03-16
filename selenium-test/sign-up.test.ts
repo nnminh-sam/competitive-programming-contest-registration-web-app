@@ -14,6 +14,7 @@ async function testSignUp() {
     await driver.get(`${BASE_URL}/sign-up`);
 
     const emailInput = await driver.findElement(By.name("email"));
+    console.log("🚀 ~ testSignUp ~ emailInput:", emailInput)
     const usernameInput = await driver.findElement(By.name("username"));
     const studentIdInput = await driver.findElement(By.name("student_id"));
     const signUpButton = await driver.findElement(By.css("button"));

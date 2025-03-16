@@ -25,7 +25,7 @@ const Account: FC = () => {
         label: item.name,
         value: item.id,
       }));
-    }
+    } 
   }, [schoolyearList]);
 
   const form = useFormik<Contestant>({

@@ -47,7 +47,9 @@ const signUp = async (payload: SignUpPayload) => {
     }
     return false;
   } catch (error: any) {
+    console.log("🚀 ~ signUp ~ error:", error.message);
     message.error(error.message);
+    return error.message;
   }
 };
 
