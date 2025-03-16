@@ -39,17 +39,17 @@ const SignIn: FC = () => {
 
       try {
         const res = await AuthApi.signIn(values);
+        console.log("🚀 ~ onSubmit: ~ res:", res);
 
         if (res?.token) {
-          localStorage.setItem("token", res.token); // Store token
-          nav("/"); // Navigate on success
+          localStorage.setItem("token", res.token);
+          setTimeout(() => nav("/"), 0); // Ensure navigation happens AFTER state updates
         } else {
-          setServerError(res?.message || "Invalid credentials");
+          setServerError(res || "Invalid credentials");
         }
       } catch (error: any) {
-        setServerError(
-          error.response?.data?.message || "An unexpected error occurred"
-        );
+        console.log("🚀 ~ onSubmit: ~ error:", error);
+        setServerError(error || "An unexpected error occurred");
       } finally {
         setSubmitting(false);
       }
@@ -133,19 +133,25 @@ const SignIn: FC = () => {
 
           {/* Display API errors here */}
           {serverError && (
-            <Text className="text-red-500 mt-2" data-testid="sign-in-error">
-              {serverError}
-            </Text>
-          )}
-          {serverError && (
-            <Text className="text-red-500 mt-2" data-testid="user-not-found">
-              {serverError}
-            </Text>
-          )}
-          {serverError && (
-            <Text className="text-red-500 mt-2" data-testid="invalid-password">
-              {serverError}
-            </Text>
+            <>
+              {serverError?.includes("Invalid email") && (
+                <div className="text-red-500 mt-2" id="user-not-found">
+                  {serverError}
+                </div>
+              )}
+              {serverError?.includes("Invalid password") && (
+                <div className="text-red-500 mt-2" id="invalid-password">
+                  {serverError}
+                </div>
+              )}
+              {/* Generic error message for other cases */}
+              {!serverError?.includes("Invalid email") &&
+                !serverError.includes("Invalid password") && (
+                  <div className="text-red-500 mt-2" id="sign-in-error">
+                    {serverError}
+                  </div>
+                )}
+            </>
           )}
 
           <Button

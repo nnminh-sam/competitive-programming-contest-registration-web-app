@@ -10,14 +10,22 @@ async function testSignIn() {
     const options = new chrome.Options();
     options.addArguments("--headless"); // Run in headless mode
 
-    driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
+    driver = await new Builder()
+      .forBrowser("chrome")
+      .setChromeOptions(options)
+      .build();
     await driver.get(`${BASE_URL}/sign-in`);
 
     console.log("🔹 Opened Sign-In Page");
 
     // Locate elements
-    const emailInput = await driver.wait(until.elementLocated(By.css('input[type="email"]')), 5000);
-    const passwordInput = await driver.findElement(By.css('input[type="password"]'));
+    const emailInput = await driver.wait(
+      until.elementLocated(By.css('input[type="email"]')),
+      5000
+    );
+    const passwordInput = await driver.findElement(
+      By.css('input[type="password"]')
+    );
     const signInButton = await driver.findElement(By.css("button"));
 
     console.log("✅ Found Input Fields & Button");
@@ -51,11 +59,12 @@ async function testSignIn() {
     // Test Case 3: Correct email but wrong password
     await emailInput.clear();
     await passwordInput.clear();
-    await emailInput.sendKeys("user@example.com");
+    await emailInput.sendKeys("phuongnamtran1902@gmail.com");
     await passwordInput.sendKeys("wrongpassword");
     await signInButton.click();
 
     try {
+      await driver.sleep(1000);
       await driver.wait(until.elementLocated(By.id("invalid-password")), 3000);
       console.log("✅ Wrong Password Test Passed");
     } catch {
@@ -65,17 +74,19 @@ async function testSignIn() {
     // Test Case 4: Successful sign-in
     await emailInput.clear();
     await passwordInput.clear();
-    await emailInput.sendKeys("user@example.com");
-    await passwordInput.sendKeys("correctpassword");
+    await emailInput.sendKeys("phuongnamtran1902@gmail.com");
+    await passwordInput.sendKeys("123123");
     await signInButton.click();
 
     try {
-      await driver.wait(until.urlIs(`${BASE_URL}/`), 5000);
+      await driver.sleep(1000)
+      await driver.wait(until.urlIs(`${BASE_URL}`), 5000);
       console.log("✅ Sign-In Success Test Passed");
     } catch {
-      console.error("❌ Sign-In Success Test Failed: Did not navigate to home page");
+      console.error(
+        "❌ Sign-In Success Test Failed: Did not navigate to home page"
+      );
     }
-
   } catch (error) {
     console.error("❌ Test execution error:", error);
   } finally {

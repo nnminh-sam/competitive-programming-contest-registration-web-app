@@ -24,6 +24,7 @@ const signIn = async (payload: SignInPayload) => {
     return false;
   } catch (error: any) {
     message.error(error.message);
+    return error.message;
   }
 };
 
