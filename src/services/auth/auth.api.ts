@@ -11,7 +11,6 @@ const signIn = async (payload: SignInPayload) => {
       url: "v1/auth/sign-in",
       data: payload,
     });
-
     if (res.status < 300) {
       const token = res.data.data.jwt;
       if (token) {
@@ -24,7 +23,10 @@ const signIn = async (payload: SignInPayload) => {
     return false;
   } catch (error: any) {
     message.error(error.message);
-    return error.message;
+    return {
+      isError: true,
+      message: error.message,
+    };
   }
 };
 

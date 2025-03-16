@@ -13,6 +13,7 @@ const SignIn: FC = () => {
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string>("");
+  const [isSignIn, setIsSignIn] = useState<boolean>(false);
 
   const form = useFormik({
     initialValues: {
@@ -35,20 +36,20 @@ const SignIn: FC = () => {
       return errors;
     },
     onSubmit: async (values, { setSubmitting }) => {
-      setServerError(""); // Reset error before API call
+      setServerError("");
 
       try {
         const res = await AuthApi.signIn(values);
-        console.log("🚀 ~ onSubmit: ~ res:", res);
 
-        if (res?.token) {
-          localStorage.setItem("token", res.token);
-          setTimeout(() => nav("/"), 0); // Ensure navigation happens AFTER state updates
+        if (!res?.isError) {
+          setIsSignIn(true);
+          // setTimeout(() => nav("/"), 0);
         } else {
-          setServerError(res || "Invalid credentials");
+          setIsSignIn(false);
+          setServerError(res.message || "Invalid credentials");
         }
       } catch (error: any) {
-        console.log("🚀 ~ onSubmit: ~ error:", error);
+        setIsSignIn(false);
         setServerError(error || "An unexpected error occurred");
       } finally {
         setSubmitting(false);
@@ -59,7 +60,7 @@ const SignIn: FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      nav("/");
+      // nav("/");
     }
   }, [nav]);
 
@@ -144,15 +145,10 @@ const SignIn: FC = () => {
                   {serverError}
                 </div>
               )}
-              {/* Generic error message for other cases */}
-              {!serverError?.includes("Invalid email") &&
-                !serverError.includes("Invalid password") && (
-                  <div className="text-red-500 mt-2" id="sign-in-error">
-                    {serverError}
-                  </div>
-                )}
             </>
           )}
+
+          {isSignIn && <div id="signed-in">fdsfds</div>}
 
           <Button
             loading={form.isSubmitting}

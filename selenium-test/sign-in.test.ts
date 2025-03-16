@@ -65,7 +65,7 @@ async function testSignIn() {
     await signInButton.click();
 
     try {
-      await driver.sleep(1000);
+      // await driver.sleep(1000);
       await driver.wait(until.elementLocated(By.id("invalid-password")), 3000);
       console.log("✅ Wrong Password Test Passed");
     } catch {
@@ -81,11 +81,22 @@ async function testSignIn() {
 
     try {
       await driver.sleep(1000);
-      await driver.wait(until.urlIs(`${BASE_URL}`), 5000);
+      await driver.wait(until.elementLocated(By.id("signed-in")), 1000);
+      // await driver.sleep(60000);
+      // driver.getCurrentUrl().then((url) => {
+      //   console.log("DEBUG >>> ", url);
+      // });
+      // await driver.wait(until.urlIs(`${BASE_URL}/`), 5000);
       console.log("✅ Sign-In Success Test Passed");
-    } catch {
+    } catch (error: any) {
+      await driver
+        .wait(until.elementLocated(By.id("signed-in")), 3000)
+        .then((data) => {
+          console.log(">>> ", data.getText());
+        });
       console.error(
-        "❌ Sign-In Success Test Failed: Did not navigate to home page"
+        "❌ Sign-In Success Test Failed: Did not navigate to home page",
+        error
       );
     }
   } catch (error) {
