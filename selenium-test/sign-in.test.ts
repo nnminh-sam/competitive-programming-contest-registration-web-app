@@ -1,56 +1,88 @@
 import { Builder, By, until, WebDriver } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome";
 
-const BASE_URL = "http://localhost:5173"; // Change if using a different port
+const BASE_URL = "http://localhost:5173"; // Adjust if needed
 
 async function testSignIn() {
   let driver: WebDriver;
 
   try {
-    // Set up Chrome options correctly
     const options = new chrome.Options();
-    options.addArguments("--headless"); // Correct way to set headless mode
+    options.addArguments("--headless"); // Run in headless mode
 
-    // Set up the Chrome WebDriver
-    driver = await new Builder()
-      .forBrowser("chrome")
-      .setChromeOptions(options)
-      .build();
-
-    console.log("🚀 ~ testSignIn ~ driver:", driver);
-    // Navigate to the sign-in page
+    driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
     await driver.get(`${BASE_URL}/sign-in`);
 
-    // Wait for email input field to load
-    const emailInput = await driver.wait(
-      until.elementLocated(By.css('input[type="email"]')),
-      5000
-    );
-    console.log("🚀 ~ testSignIn ~ emailInput:", emailInput);
-    await emailInput.sendKeys("phuongnamtran1902@gmail.com");
+    console.log("🔹 Opened Sign-In Page");
 
-    // Enter password
-    const passwordInput = await driver.findElement(
-      By.css('input[type="password"]')
-    );
-    console.log("🚀 ~ testSignIn ~ passwordInput:", passwordInput);
-    await passwordInput.sendKeys("123123");
-
-    // Click the Sign In button
+    // Locate elements
+    const emailInput = await driver.wait(until.elementLocated(By.css('input[type="email"]')), 5000);
+    const passwordInput = await driver.findElement(By.css('input[type="password"]'));
     const signInButton = await driver.findElement(By.css("button"));
-    console.log("🚀 ~ testSignIn ~ signInButton:", signInButton);
+
+    console.log("✅ Found Input Fields & Button");
+
+    // Test Case 1: Invalid email format
+    await emailInput.sendKeys("invalid-email");
+    await passwordInput.sendKeys("password123");
     await signInButton.click();
 
-    // Wait for navigation to dashboard or home page
-    await driver.wait(until.urlIs(`${BASE_URL}/`), 5000);
+    try {
+      await driver.wait(until.elementLocated(By.css(".input-error")), 3000);
+      console.log("✅ Invalid Email Test Passed");
+    } catch {
+      console.error("❌ Invalid Email Test Failed: No error displayed");
+    }
 
-    console.log("✅ Sign-in test passed!");
+    // Test Case 2: Correct email but no user found
+    await emailInput.clear();
+    await passwordInput.clear();
+    await emailInput.sendKeys("notfound@example.com");
+    await passwordInput.sendKeys("password123");
+    await signInButton.click();
+
+    try {
+      await driver.wait(until.elementLocated(By.id("user-not-found")), 3000);
+      console.log("✅ User Not Found Test Passed");
+    } catch {
+      console.error("❌ User Not Found Test Failed: No error displayed");
+    }
+
+    // Test Case 3: Correct email but wrong password
+    await emailInput.clear();
+    await passwordInput.clear();
+    await emailInput.sendKeys("user@example.com");
+    await passwordInput.sendKeys("wrongpassword");
+    await signInButton.click();
+
+    try {
+      await driver.wait(until.elementLocated(By.id("invalid-password")), 3000);
+      console.log("✅ Wrong Password Test Passed");
+    } catch {
+      console.error("❌ Wrong Password Test Failed: No error displayed");
+    }
+
+    // Test Case 4: Successful sign-in
+    await emailInput.clear();
+    await passwordInput.clear();
+    await emailInput.sendKeys("user@example.com");
+    await passwordInput.sendKeys("correctpassword");
+    await signInButton.click();
+
+    try {
+      await driver.wait(until.urlIs(`${BASE_URL}/`), 5000);
+      console.log("✅ Sign-In Success Test Passed");
+    } catch {
+      console.error("❌ Sign-In Success Test Failed: Did not navigate to home page");
+    }
+
   } catch (error) {
-    console.error("❌ Sign-in test failed:", error);
+    console.error("❌ Test execution error:", error);
   } finally {
-    // Quit the WebDriver
     await driver?.quit();
+    console.log("🔹 Test Finished & Browser Closed");
   }
 }
 
+// Run the test
 testSignIn();

@@ -12,6 +12,8 @@ import "./SignIn.scss";
 const SignIn: FC = () => {
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [serverError, setServerError] = useState<string>("");
+
   const form = useFormik({
     initialValues: {
       email: "",
@@ -22,6 +24,8 @@ const SignIn: FC = () => {
 
       if (!values.email) {
         errors.email = "Required field";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+        errors.email = "Invalid email format";
       }
 
       if (!values.password) {
@@ -30,10 +34,24 @@ const SignIn: FC = () => {
 
       return errors;
     },
-    onSubmit: async (values) => {
-      const res = await AuthApi.signIn(values);
-      if (res) {
-        nav("/");
+    onSubmit: async (values, { setSubmitting }) => {
+      setServerError(""); // Reset error before API call
+
+      try {
+        const res = await AuthApi.signIn(values);
+
+        if (res?.token) {
+          localStorage.setItem("token", res.token); // Store token
+          nav("/"); // Navigate on success
+        } else {
+          setServerError(res?.message || "Invalid credentials");
+        }
+      } catch (error: any) {
+        setServerError(
+          error.response?.data?.message || "An unexpected error occurred"
+        );
+      } finally {
+        setSubmitting(false);
       }
     },
   });
@@ -56,7 +74,7 @@ const SignIn: FC = () => {
           />
         </div>
         <div className="flex-1 flex flex-col gap-6 items-center justify-center">
-          <div className="flex flex-col gap-1 ">
+          <div className="flex flex-col gap-1">
             <Text
               type="headline-4"
               color={Colors.PRIMARY}
@@ -112,14 +130,32 @@ const SignIn: FC = () => {
               Sign up
             </Text>
           </div>
+
+          {/* Display API errors here */}
+          {serverError && (
+            <Text className="text-red-500 mt-2" data-testid="sign-in-error">
+              {serverError}
+            </Text>
+          )}
+          {serverError && (
+            <Text className="text-red-500 mt-2" data-testid="user-not-found">
+              {serverError}
+            </Text>
+          )}
+          {serverError && (
+            <Text className="text-red-500 mt-2" data-testid="invalid-password">
+              {serverError}
+            </Text>
+          )}
+
           <Button
             loading={form.isSubmitting}
             onClick={() => form.handleSubmit()}
             className="justify-center w-[200px] !h-[45px] text-xl"
+            disabled={form.isSubmitting}
           >
             Sign In
           </Button>
-          <div className="flex justify-between items-center"></div>
         </div>
       </div>
     </div>

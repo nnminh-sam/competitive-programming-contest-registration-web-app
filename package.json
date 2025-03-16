@@ -8,9 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:selenium": "node --loader ts-node/esm selenium-test/sign-in.test.ts",
-    "test:selenium-v2":   "tsx selenium-test/sign-in.test.ts"
-
+    "test:sign-in": "tsx selenium-test/sign-in.test.ts",
+    "test:sign-up": "tsx selenium-test/sign-up.test.ts",
+    "test:forgot-password": "tsx selenium-test/forgot-password.test.ts",
+    "test:reset-password": "tsx selenium-test/reset-password.test.ts",
+    "test:account": "tsx selenium-test/account.test.ts"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
