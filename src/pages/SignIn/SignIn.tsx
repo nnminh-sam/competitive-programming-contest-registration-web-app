@@ -14,6 +14,7 @@ const SignIn: FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string>("");
   const [isSignIn, setIsSignIn] = useState<boolean>(false);
+  console.log("🚀 ~ isSignIn:", isSignIn)
 
   const form = useFormik({
     initialValues: {
@@ -42,6 +43,8 @@ const SignIn: FC = () => {
         const res = await AuthApi.signIn(values);
 
         if (!res?.isError) {
+          console.log("sign in true");
+
           setIsSignIn(true);
           // setTimeout(() => nav("/"), 0);
         } else {

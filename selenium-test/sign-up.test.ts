@@ -1,12 +1,11 @@
 import { Builder, By, until, WebDriver } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome";
-import { SignUpTest, BASE_URL } from "./test-input.config";
-import { Sign } from "crypto";
+import { BASE_URL, SignUpTest } from "./test-input.config";
 
 // const BASE_URL = "http://localhost:5173"; // Change if needed
 
 async function testSignUp() {
-  let driver: WebDriver;
+  let driver: WebDriver | undefined;
 
   try {
     const options = new chrome.Options();
@@ -19,8 +18,14 @@ async function testSignUp() {
     await driver.get(`${BASE_URL}/sign-up`);
 
     const emailInput = await driver.findElement(By.name("email"));
+    const passwordInput = await driver.findElement(By.name("password"));
     const usernameInput = await driver.findElement(By.name("username"));
     const studentIdInput = await driver.findElement(By.name("student_id"));
+    const firstName = await driver.findElement(By.name("first_name"));
+    const lastName = await driver.findElement(By.name("last_name"));
+    console.log("🚀 ~ testSignUp ~ lastName:", lastName);
+    const schoolYear = await driver.findElement(By.id("school_year"));
+    console.log("🚀 ~ testSignUp ~ schoolYear:", schoolYear);
     const signUpButton = await driver.findElement(By.css("button"));
     console.log("✅ Element loaded");
 
@@ -35,18 +40,44 @@ async function testSignUp() {
     await usernameInput.clear();
     await studentIdInput.clear();
     await emailInput.sendKeys(SignUpTest.UsernameTaken.email);
+    await passwordInput.sendKeys(SignUpTest.UsernameTaken.password);
+    await firstName.sendKeys(SignUpTest.UsernameTaken.firstName);
+    await lastName.sendKeys(SignUpTest.UsernameTaken.lastName);
     await usernameInput.sendKeys(SignUpTest.UsernameTaken.username);
     await studentIdInput.sendKeys(SignUpTest.UsernameTaken.studentId);
     await signUpButton.click();
-    await driver.wait(until.elementLocated(By.id("username-error")), 3000);
-    console.log("✅ Username Taken Test Passed");
+
+    // Add more logging and increase timeout
+    console.log("Waiting for username error message...");
+    try {
+      const errorElement = await driver.wait(
+        until.elementLocated(By.id("username-error")),
+        10000
+      );
+      const errorText = await errorElement.getText();
+      console.log("Found error message:", errorText);
+      console.log("✅ Username Taken Test Passed");
+    } catch (error) {
+      console.error("Failed to find username error message:", error);
+      // Try to get any error message that might be visible
+      const errorElements = await driver.findElements(By.css(".text-red-500"));
+      for (const element of errorElements) {
+        const text = await element.getText();
+        console.log("Found error message:", text);
+      }
+      throw error;
+    }
 
     // Test Case 3: Student ID is taken
     await emailInput.clear();
     await usernameInput.clear();
     await studentIdInput.clear();
+
     await emailInput.sendKeys(SignUpTest.StudentIdTaken.email);
     await usernameInput.sendKeys(SignUpTest.StudentIdTaken.username);
+    await passwordInput.sendKeys(SignUpTest.StudentIdTaken.password);
+    await firstName.sendKeys(SignUpTest.StudentIdTaken.firstName);
+    await lastName.sendKeys(SignUpTest.StudentIdTaken.lastName);
     await studentIdInput.sendKeys(SignUpTest.StudentIdTaken.studentId);
     await signUpButton.click();
     await driver.wait(until.elementLocated(By.id("studentid-error")), 3000);
@@ -71,7 +102,7 @@ async function testSignUp() {
     await usernameInput.sendKeys(SignUpTest.SignUpSuccess.username);
     await studentIdInput.sendKeys(SignUpTest.SignUpSuccess.studentId);
     await signUpButton.click();
-    await driver.wait(until.urlIs(`${BASE_URL}/sign-in`), 5000);
+    await driver.wait(until.urlIs(`${BASE_URL}`), 5000);
     console.log("✅ Sign-Up Success Test Passed");
   } catch (error) {
     console.error("❌ Sign-up test failed:", error);

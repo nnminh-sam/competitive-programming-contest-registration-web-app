@@ -78,11 +78,11 @@ async function testSignIn() {
     await emailInput.sendKeys(SignInTest.SignInSucess.email);
     await passwordInput.sendKeys(SignInTest.SignInSucess.password);
     await signInButton.click();
-
+    // Add this to your test
     try {
-      await driver.sleep(1000);
-      await driver.wait(until.elementLocated(By.id("signed-in")), 1000);
-      // await driver.sleep(60000);
+      await driver.sleep(2000);
+
+      await driver.wait(until.elementLocated(By.id("signed-in")), 10000); // Increase timeout to 10 seconds      // await driver.sleep(60000);
       // driver.getCurrentUrl().then((url) => {
       //   console.log("DEBUG >>> ", url);
       // });

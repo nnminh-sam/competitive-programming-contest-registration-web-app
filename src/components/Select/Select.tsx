@@ -16,6 +16,7 @@ interface Props extends Omit<SelectProps, "bordered"> {
   hint?: string;
   bordered?: boolean;
   isInFormItem?: boolean;
+  id?: string;
 }
 
 const Select: FC<Props> = ({
@@ -28,6 +29,7 @@ const Select: FC<Props> = ({
   hint,
   suffixIcon,
   bordered = false,
+  id,
   isInFormItem,
   ...rest
 }) => {
@@ -38,6 +40,7 @@ const Select: FC<Props> = ({
         bordered,
         "in-form-item": isInFormItem,
       })}
+      id={id || "select"}
     >
       {label && <label className="input-label">{label}</label>}
       <div className={classNames("input-field")}>

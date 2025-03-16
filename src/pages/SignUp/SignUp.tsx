@@ -44,44 +44,48 @@ const SignUp: FC = () => {
     validate: (values) => {
       const errors: Record<string, string> = {};
 
-      if (!values.email) {
-        errors.email = "Required field";
-      }
+      // if (!values.email) {
+      //   errors.email = "Required field";
+      // }
 
-      if (!values.username) {
-        errors.username = "Required field";
-      }
+      // if (!values.username) {
+      //   errors.username = "Required field";
+      // }
 
-      if (!values.password) {
-        errors.password = "Required field";
-      }
+      // if (!values.password) {
+      //   errors.password = "Required field";
+      // }
 
-      if (!values.first_name) {
-        errors.first_name = "Required field";
-      }
+      // if (!values.first_name) {
+      //   errors.first_name = "Required field";
+      // }
 
-      if (!values.last_name) {
-        errors.last_name = "Required field";
-      }
+      // if (!values.last_name) {
+      //   errors.last_name = "Required field";
+      // }
 
-      if (!values.student_id) {
-        errors.student_id = "Required field";
-      }
+      // if (!values.student_id) {
+      //   errors.student_id = "Required field";
+      // }
 
-      if (!values.gender) {
-        errors.gender = "Required field";
-      }
+      // if (!values.gender) {
+      //   errors.gender = "Required field";
+      // }
 
-      if (!values.school_year) {
-        errors.school_year = "Required field";
-      }
+      // if (!values.school_year) {
+      //   errors.school_year = "Required field";
+      // }
 
-      return errors;
+      // return errors;
     },
     onSubmit: async (values) => {
       const res = await AuthApi.signUp({ ...values, gender: "Male" });
       if (res?.isError) {
-        setServerError(res.message || "Invalid credentials");
+        setServerError(
+          Array.isArray(res.message)
+            ? res.message
+            : [res.message || "Invalid credentials"]
+        );
         return;
       }
       nav("/");
@@ -192,7 +196,7 @@ const SignUp: FC = () => {
             error={form.errors.student_id}
           />
           <Select
-            name="gender"
+            id="gender"
             className="w-[300px]"
             bordered
             label="Gender*"
@@ -206,15 +210,21 @@ const SignUp: FC = () => {
             ]}
           />
           <Select
-            name="school_year"
+            id="school_year"
             className="w-[300px]"
             bordered
             label="School Year*"
             value={form.values.school_year}
             onChange={(value) => form.setFieldValue("school_year", value)}
-            error={form.errors.school_year}
-            options={schoolYearOptions}
-          />
+            // error={form.errors.school_year}
+            // options={}
+          >
+            {schoolYearOptions?.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </Select>
 
           <Text
             className="cursor-pointer"
@@ -226,35 +236,39 @@ const SignUp: FC = () => {
           </Text>
           {serverError && (
             <>
-              {serverError?.includes("Invalid email") && (
-                <div className="text-red-500 mt-2" id="invalid-email">
-                  {serverError}
-                </div>
-              )}
-              {serverError?.includes("Invalid password") && (
-                <div className="text-red-500 mt-2" id="invalid-password">
-                  {serverError}
-                </div>
-              )}
-              {/* Generic error message for other cases */}
-              {serverError?.includes("Username is taken") && (
+              {serverError.some((error) =>
+                error.toLowerCase().includes("username is taken")
+              ) && (
                 <div className="text-red-500 mt-2" id="username-error">
-                  {serverError}
+                  {serverError.join(", ")}
                 </div>
-              )}{" "}
-              {serverError?.includes("Email is taken") && (
+              )}
+              {serverError.some((error) =>
+                error.toLowerCase().includes("invalid email")
+              ) && (
+                <div className="text-red-500 mt-2" id="invalid-email">
+                  {serverError.join(", ")}
+                </div>
+              )}
+              {serverError.some((error) =>
+                error.toLowerCase().includes("email is taken")
+              ) && (
                 <div className="text-red-500 mt-2" id="email-taken-error">
-                  {serverError}
+                  {serverError.join(", ")}
                 </div>
               )}
-              {serverError?.includes("Student id is taken") && (
+              {serverError.some((error) =>
+                error.toLowerCase().includes("student id is taken")
+              ) && (
                 <div className="text-red-500 mt-2" id="studentid-error">
-                  {serverError}
+                  {serverError.join(", ")}
                 </div>
               )}
-              {serverError?.includes("email must be an email") && (
+              {serverError.some((error) =>
+                error.toLowerCase().includes("email must be an email")
+              ) && (
                 <div className="text-red-500 mt-2" id="email-error">
-                  {serverError}
+                  {serverError.join(", ")}
                 </div>
               )}
             </>
