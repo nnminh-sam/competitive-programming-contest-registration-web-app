@@ -7,22 +7,17 @@ import Input from "../../components/Input";
 import Text from "../../components/Text";
 import Colors from "../../constants/color";
 import { AuthApi } from "../../services/auth";
-import "./SignIn.scss";
+import "../SignIn/SignIn.scss";
 
-const SignIn: FC = () => {
+const ResetPassword: FC = () => {
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const form = useFormik({
     initialValues: {
-      email: "",
       password: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
-
-      if (!values.email) {
-        errors.email = "Required field";
-      }
 
       if (!values.password) {
         errors.password = "Required field";
@@ -31,9 +26,12 @@ const SignIn: FC = () => {
       return errors;
     },
     onSubmit: async (values) => {
-      const res = await AuthApi.signIn(values);
+      const res = await AuthApi.resetPassword({
+        new_password: values.password,
+        token: new URLSearchParams(window.location.search).get("token") || "",
+      });
       if (res) {
-        nav("/");
+        nav("/sign-in");
       }
     },
   });
@@ -62,19 +60,10 @@ const SignIn: FC = () => {
               color={Colors.PRIMARY}
               className="!text-3xl"
             >
-              Sign in to your Account
+              Reset Password
             </Text>
           </div>
-          <Input
-            type="email"
-            className="w-[300px]"
-            bordered
-            label="Email address*"
-            placeholder="Enter email address"
-            value={form.values.email}
-            onChange={form.handleChange("email")}
-            error={form.errors.email}
-          />
+
           <Input
             type={showPassword ? "text" : "password"}
             className="w-[300px]"
@@ -103,21 +92,13 @@ const SignIn: FC = () => {
             >
               Forgot password
             </Text>
-            <Text
-              className="cursor-pointer"
-              type="title-2"
-              color={Colors.PRIMARY}
-              onClick={() => nav("/sign-up")}
-            >
-              Sign up
-            </Text>
           </div>
           <Button
             loading={form.isSubmitting}
             onClick={() => form.handleSubmit()}
             className="justify-center w-[200px] !h-[45px] text-xl"
           >
-            Sign In
+            Reset Password
           </Button>
           <div className="flex justify-between items-center"></div>
         </div>
@@ -126,4 +107,4 @@ const SignIn: FC = () => {
   );
 };
 
-export default SignIn;
+export default ResetPassword;
