@@ -80,11 +80,11 @@ const SignUp: FC = () => {
     },
     onSubmit: async (values) => {
       const res = await AuthApi.signUp({ ...values, gender: "Male" });
-      if (res) {
-        nav("/");
-      } else {
-        setServerError(res || "Invalid credentials");
+      if (res?.isError) {
+        setServerError(res.message || "Invalid credentials");
+        return;
       }
+      nav("/");
     },
   });
 
@@ -227,7 +227,7 @@ const SignUp: FC = () => {
           {serverError && (
             <>
               {serverError?.includes("Invalid email") && (
-                <div className="text-red-500 mt-2" id="user-not-found">
+                <div className="text-red-500 mt-2" id="invalid-email">
                   {serverError}
                 </div>
               )}
@@ -247,7 +247,7 @@ const SignUp: FC = () => {
                   {serverError}
                 </div>
               )}
-              {serverError?.includes("Student Id is taken") && (
+              {serverError?.includes("Student id is taken") && (
                 <div className="text-red-500 mt-2" id="studentid-error">
                   {serverError}
                 </div>

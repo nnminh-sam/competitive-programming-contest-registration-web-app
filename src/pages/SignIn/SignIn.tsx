@@ -134,11 +134,11 @@ const SignIn: FC = () => {
           {/* Display API errors here */}
           {serverError && (
             <>
-              {/* {serverError?.includes("Invalid email") && (
+              {serverError?.includes("Contestant not found") && (
                 <div className="text-red-500 mt-2" id="user-not-found">
                   {serverError}
                 </div>
-              )} */}
+              )}
               {serverError?.includes("Invalid password") && (
                 <div className="text-red-500 mt-2" id="invalid-password">
                   {serverError}

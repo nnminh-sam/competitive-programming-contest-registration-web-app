@@ -1,7 +1,7 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Menu, message } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import Colors from "../../constants/color";
 import Text from "../../components/Text";
 import { useFormik } from "formik";
@@ -17,7 +17,6 @@ import { isArray } from "lodash";
 
 const Account: FC = () => {
   const contestant = useRecoilValue(ContestantAtom.curentContestant);
-  console.log("🚀 ~ contestant:", contestant);
   const schoolyearList = useRecoilValue(AffiliationAtom.affiliationList);
   const schoolYearOptions = useMemo(() => {
     if (isArray(schoolyearList)) {
@@ -25,8 +24,9 @@ const Account: FC = () => {
         label: item.name,
         value: item.id,
       }));
-    } 
+    }
   }, [schoolyearList]);
+  const [serverError, setServerError] = useState<string>("");
 
   const form = useFormik<Contestant>({
     enableReinitialize: true,
@@ -55,9 +55,12 @@ const Account: FC = () => {
     },
     onSubmit: async (values) => {
       ContestantApi.updateContestant(values).then((res) => {
-        if (res) {
+        console.log("🚀 ~ ContestantApi.updateContestant ~ res:", res);
+        if (!res) {
           form.setSubmitting(false);
           message.success("Update success");
+        } else {
+          setServerError(res);
         }
       });
     },
@@ -106,6 +109,7 @@ const Account: FC = () => {
           </Text>
           <div className="flex flex-wrap gap-4">
             <Input
+              name="email"
               type="email"
               className="w-[48%]"
               bordered
@@ -136,6 +140,7 @@ const Account: FC = () => {
               error={form.errors.last_name}
             />
             <Input
+              name="username"
               type="text"
               className="w-[48%]"
               bordered
@@ -146,6 +151,7 @@ const Account: FC = () => {
               error={form.errors.username}
             />
             <Input
+              name="student-id"
               type="text"
               className="w-[48%]"
               bordered
@@ -180,8 +186,45 @@ const Account: FC = () => {
                 options={schoolYearOptions}
               />
             </div>
+            {serverError && (
+              <>
+                {serverError?.includes("Email is taken") && (
+                  <div
+                    className="text-red-500 mt-2 error-response"
+                    id="email-taken"
+                  >
+                    {serverError}
+                  </div>
+                )}
+                {serverError?.includes("Username is taken") && (
+                  <div
+                    className="text-red-500 mt-2 error-response"
+                    id="username-taken"
+                  >
+                    {serverError}
+                  </div>
+                )}
+                {serverError?.includes("Student id is taken") && (
+                  <div
+                    className="text-red-500 mt-2 error-response"
+                    id="student-id-taken"
+                  >
+                    {serverError}
+                  </div>
+                )}
+                {serverError?.includes("Invalid email") && (
+                  <div
+                    className="text-red-500 mt-2 error-response"
+                    id="invalid-email"
+                  >
+                    {serverError}
+                  </div>
+                )}
+              </>
+            )}
             <div className="w-full flex justify-center mt-4">
               <Button
+                name="save-btn"
                 disabled={!form.dirty}
                 loading={form.isSubmitting}
                 onClick={() => form.handleSubmit()}

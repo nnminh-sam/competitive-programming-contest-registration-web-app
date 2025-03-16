@@ -1,7 +1,8 @@
 import { Builder, By, until, WebDriver } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome";
+import { SignInTest, BASE_URL } from "./test-input.config";
 
-const BASE_URL = "http://localhost:5173"; // Adjust if needed
+// const BASE_URL = "http://localhost:5173"; // Adjust if needed
 
 async function testSignIn() {
   let driver: WebDriver;
@@ -31,8 +32,8 @@ async function testSignIn() {
     console.log("✅ Found Input Fields & Button");
 
     // Test Case 1: Invalid email format
-    await emailInput.sendKeys("invalid-email");
-    await passwordInput.sendKeys("password123");
+    await emailInput.sendKeys(SignInTest.InvalidEmail.email);
+    await passwordInput.sendKeys(SignInTest.InvalidEmail.password);
     await signInButton.click();
 
     try {
@@ -45,8 +46,8 @@ async function testSignIn() {
     // Test Case 2: Correct email but no user found
     await emailInput.clear();
     await passwordInput.clear();
-    await emailInput.sendKeys("notfound@example.com");
-    await passwordInput.sendKeys("password123");
+    await emailInput.sendKeys(SignInTest.UserNotFound.email);
+    await passwordInput.sendKeys(SignInTest.UserNotFound.password);
     await signInButton.click();
 
     try {
@@ -59,8 +60,8 @@ async function testSignIn() {
     // Test Case 3: Correct email but wrong password
     await emailInput.clear();
     await passwordInput.clear();
-    await emailInput.sendKeys("phuongnamtran1902@gmail.com");
-    await passwordInput.sendKeys("wrongpassword");
+    await emailInput.sendKeys(SignInTest.WrongPassword.email);
+    await passwordInput.sendKeys(SignInTest.WrongPassword.password);
     await signInButton.click();
 
     try {
@@ -74,12 +75,12 @@ async function testSignIn() {
     // Test Case 4: Successful sign-in
     await emailInput.clear();
     await passwordInput.clear();
-    await emailInput.sendKeys("phuongnamtran1902@gmail.com");
-    await passwordInput.sendKeys("123123");
+    await emailInput.sendKeys(SignInTest.SignInSucess.email);
+    await passwordInput.sendKeys(SignInTest.SignInSucess.password);
     await signInButton.click();
 
     try {
-      await driver.sleep(1000)
+      await driver.sleep(1000);
       await driver.wait(until.urlIs(`${BASE_URL}`), 5000);
       console.log("✅ Sign-In Success Test Passed");
     } catch {

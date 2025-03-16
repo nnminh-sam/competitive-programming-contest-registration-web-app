@@ -29,7 +29,7 @@ const updateContestant = async (data: Partial<Contestant>) => {
     return null;
   } catch (error: any) {
     message.error(error.message);
-    return null;
+    return error.message;
   }
 };
 
@@ -65,5 +65,5 @@ export default {
   getMe,
   updateContestant,
   deleteContestant,
-  getParticipatedContests
+  getParticipatedContests,
 };
