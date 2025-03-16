@@ -7,6 +7,7 @@ import Text from "../../components/Text";
 import Colors from "../../constants/color";
 import { AuthApi } from "../../services/auth";
 import "../SignIn/SignIn.scss";
+import { notification } from "antd";
 
 const ForgotPassword: FC = () => {
   const nav = useNavigate();
@@ -27,7 +28,11 @@ const ForgotPassword: FC = () => {
     onSubmit: async (values) => {
       const res = await AuthApi.forgotPassword(values.email);
       if (res) {
-        nav(`/reset-password?token=${res.token}`);
+        // nav(`/reset-password?token=${res.token}`);
+        notification.success({
+          message:
+            "An email have sent to your mail box. Please check and follow the instruction in the email.",
+        });
       }
     },
   });
