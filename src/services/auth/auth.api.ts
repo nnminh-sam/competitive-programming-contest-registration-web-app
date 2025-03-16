@@ -49,8 +49,47 @@ const signUp = async (payload: SignUpPayload) => {
     message.error(error.message);
   }
 };
+
+const forgotPassword = async (email: string) => {
+  try {
+    const res = await Api({
+      method: "POST",
+      url: "v1/auth/forgot-password",
+      data: { email },
+    });
+
+    if (res.status < 300) {
+      return res.data.data;
+    }
+    return false;
+  } catch (error: any) {
+    message.error(error.message);
+  }
+};
+
+const resetPassword = async (payload: {
+  new_password: string;
+  token: string;
+}) => {
+  try {
+    const res = await Api({
+      method: "POST",
+      url: "v1/auth/reset-password",
+      data: payload,
+    });
+
+    if (res.status < 300) {
+      return true;
+    }
+    return false;
+  } catch (error: any) {
+    message.error(error.message);
+  }
+};
 const AuthApi = {
   signIn,
   signUp,
+  forgotPassword,
+  resetPassword,
 };
 export default AuthApi;

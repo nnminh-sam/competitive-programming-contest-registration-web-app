@@ -1,25 +1,17 @@
-import { Layout, Menu, Button } from "antd";
-import { Header, Content } from "antd/es/layout/layout";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { FC, useEffect, useState } from "react";
 import { isArray } from "lodash";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
-import Text from "../../components/Text";
-import Card from "../../components/Card/Card";
-import { Contest, ContestApi } from "../../services/contest";
-import Colors from "../../constants/color";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+import Card from "../../components/Card/Card";
+import Text from "../../components/Text";
+import Colors from "../../constants/color";
+import { Contest, ContestApi } from "../../services/contest";
 import ContestantAtom from "../../services/contestant/contestant.atom";
 
 const Homepage: FC = () => {
-  const [collapsed, setCollapsed] = useState<boolean>(false);
   const [contestList, setContestList] = useState<Contest[]>([]);
   const participatedContests = useRecoilValue(
     ContestantAtom.participatedContests
@@ -39,6 +31,18 @@ const Homepage: FC = () => {
     };
     fetchContestList();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      nav("/sign-in");
+    }
+  }, [nav]);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token"); // Remove token from localStorage
+    nav("/sign-in"); // Navigate to Sign In page
+  };
 
   // Filtering the contests
   const participatedContestIds = new Set(participatedContests.map((c) => c.id));
@@ -62,35 +66,44 @@ const Homepage: FC = () => {
           />
         </div>
       </div>
-      <div className="flex gap-6 justify-start">
-        <Sider
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          className="rounded-xl bg-transparent "
-        >
-          <div className="demo-logo-vertical  bg-transparent rounded-xl" />
-          <Menu
-            theme="light"
-            mode="inline"
-            className="rounded-xl"
-            items={[
-              {
-                key: "1",
-                icon: <UserOutlined style={{ color: Colors.PRIMARY_BLUE }} />,
-                label: (
-                  <Text
-                    color={Colors.PRIMARY_BLUE}
-                    type="body-2"
-                    onClick={() => nav("/account")}
-                  >
-                    Account
-                  </Text>
-                ),
-              },
-            ]}
-          />
-        </Sider>
+      <div className="flex gap-6 justify-center">
+        <div className="flex flex-col h-screen">
+          <Sider
+            trigger={null}
+            collapsible
+            className="rounded-xl bg-transparent "
+          >
+            <div className="demo-logo-vertical  bg-transparent rounded-xl" />
+            <Menu
+              theme="light"
+              mode="inline"
+              className="rounded-xl"
+              items={[
+                {
+                  key: "1",
+                  icon: <UserOutlined style={{ color: Colors.PRIMARY_BLUE }} />,
+                  label: (
+                    <Text
+                      color={Colors.PRIMARY_BLUE}
+                      type="body-2"
+                      onClick={() => nav("/account")}
+                    >
+                      Account
+                    </Text>
+                  ),
+                },
+              ]}
+            />
+          </Sider>
+          <Button
+            type="text"
+            icon={<LogoutOutlined />}
+            className="w-1/2 flex items-center jus p-2 text-red-500"
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </Button>
+        </div>
 
         <div className="bg-white flex-1 rounded-xl px-4 py-6">
           {/* Participated Contests Section */}

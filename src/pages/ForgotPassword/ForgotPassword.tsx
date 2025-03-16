@@ -1,21 +1,19 @@
 import { useFormik } from "formik";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
-import Icon from "../../components/Icon/Icon";
 import Input from "../../components/Input";
 import Text from "../../components/Text";
 import Colors from "../../constants/color";
 import { AuthApi } from "../../services/auth";
-import "./SignIn.scss";
+import "../SignIn/SignIn.scss";
 
-const SignIn: FC = () => {
+const ForgotPassword: FC = () => {
   const nav = useNavigate();
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const form = useFormik({
     initialValues: {
       email: "",
-      password: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -24,16 +22,12 @@ const SignIn: FC = () => {
         errors.email = "Required field";
       }
 
-      if (!values.password) {
-        errors.password = "Required field";
-      }
-
       return errors;
     },
     onSubmit: async (values) => {
-      const res = await AuthApi.signIn(values);
+      const res = await AuthApi.forgotPassword(values.email);
       if (res) {
-        nav("/");
+        nav(`/reset-password?token=${res.token}`);
       }
     },
   });
@@ -62,7 +56,7 @@ const SignIn: FC = () => {
               color={Colors.PRIMARY}
               className="!text-3xl"
             >
-              Sign in to your Account
+              Forgot Password
             </Text>
           </div>
           <Input
@@ -75,41 +69,15 @@ const SignIn: FC = () => {
             onChange={form.handleChange("email")}
             error={form.errors.email}
           />
-          <Input
-            type={showPassword ? "text" : "password"}
-            className="w-[300px]"
-            bordered
-            label="Password*"
-            placeholder="Enter password"
-            value={form.values.password}
-            onChange={form.handleChange("password")}
-            error={form.errors.password}
-            suffix={
-              <Icon
-                name={!showPassword ? "eye" : "eye-closed"}
-                size={20}
-                className="cursor-pointer"
-                onClick={() => setShowPassword((prev) => !prev)}
-                color={Colors.GREY_300}
-              />
-            }
-          />
+
           <div className="w-[300px] flex items-center justify-between -mt-4">
             <Text
               className="cursor-pointer"
               type="body-2"
               color={Colors.PRIMARY}
-              onClick={() => nav("/forgot-password")}
+              onClick={() => nav("/sign-in")}
             >
-              Forgot password
-            </Text>
-            <Text
-              className="cursor-pointer"
-              type="title-2"
-              color={Colors.PRIMARY}
-              onClick={() => nav("/sign-up")}
-            >
-              Sign up
+              Sign In
             </Text>
           </div>
           <Button
@@ -117,7 +85,7 @@ const SignIn: FC = () => {
             onClick={() => form.handleSubmit()}
             className="justify-center w-[200px] !h-[45px] text-xl"
           >
-            Sign In
+            Send Email
           </Button>
           <div className="flex justify-between items-center"></div>
         </div>
@@ -126,4 +94,4 @@ const SignIn: FC = () => {
   );
 };
 
-export default SignIn;
+export default ForgotPassword;
