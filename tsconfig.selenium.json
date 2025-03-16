@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true, 
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "types": ["node", "selenium-webdriver", "mocha"],
+    "outDir": "dist-selenium"
+  },
+  "include": ["selenium-test/**/*.ts"]
+}
