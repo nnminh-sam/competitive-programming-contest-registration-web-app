@@ -27,6 +27,7 @@ const Account: FC = () => {
     }
   }, [schoolyearList]);
   const [serverError, setServerError] = useState<string>("");
+  console.log("🚀 ~ serverError:", serverError);
 
   const form = useFormik<Contestant>({
     enableReinitialize: true,
@@ -54,9 +55,12 @@ const Account: FC = () => {
       return errors;
     },
     onSubmit: async (values) => {
-      ContestantApi.updateContestant(values).then((res) => {
+      ContestantApi.updateContestant(
+        contestant?.id as string,
+        values
+      ).then((res) => {
         console.log("🚀 ~ ContestantApi.updateContestant ~ res:", res);
-        if (!res) {
+        if (res.data) {
           form.setSubmitting(false);
           message.success("Update success");
         } else {
@@ -222,6 +226,7 @@ const Account: FC = () => {
                 )}
               </>
             )}
+
             <div className="w-full flex justify-center mt-4">
               <Button
                 name="save-btn"

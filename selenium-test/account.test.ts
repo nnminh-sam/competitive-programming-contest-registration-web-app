@@ -1,4 +1,4 @@
-import { Builder, By, until, WebDriver } from "selenium-webdriver";
+import { Builder, By, logging, until, WebDriver } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome";
 import { BASE_URL, AccountTest } from "./test-input.config";
 
@@ -9,79 +9,77 @@ async function testAccountPage() {
     // Open Account Page
     const options = new chrome.Options();
     options.addArguments("--headless");
-
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
       .build();
     await driver.get(`${BASE_URL}/account`);
 
-    // Test Cases
-    // const testCases = [
-    //   {
-    //     scenario: "Invalid email",
-    //     email: "invalid-email",
-    //     username: "anyUser",
-    //     studentId: "12345",
-    //     expectedError: "Invalid email error",
-    //   },
-    //   {
-    //     scenario: "Username is taken",
-    //     email: "valid@example.com",
-    //     username: "usedUsername",
-    //     studentId: "12345",
-    //     expectedError: "Username is taken",
-    //   },
-    //   {
-    //     scenario: "Student ID is taken",
-    //     email: "valid@example.com",
-    //     username: "unusedUsername",
-    //     studentId: "usedStudentId",
-    //     expectedError: "Student ID is taken",
-    //   },
-    //   {
-    //     scenario: "Email is taken",
-    //     email: "used@example.com",
-    //     username: "unusedUsername",
-    //     studentId: "unusedStudentId",
-    //     expectedError: "Email is taken",
-    //   },
-    //   {
-    //     scenario: "Sign up success",
-    //     email: "new@example.com",
-    //     username: "newUsername",
-    //     studentId: "newStudentId",
-    //     expectedError: "Sign up success",
-    //   },
-    // ];
+    const emailInput = await driver.findElement(By.name("email"));
+    const usernameInput = await driver.findElement(By.name("username"));
+    const studentIdInput = await driver.findElement(By.name("student-id"));
 
-    for (const testCase of AccountTest) {
-      console.log(`Running test: ${testCase.scenario}`);
+    for (let i = 0; i < AccountTest.length; i++) {
+      const testCase = AccountTest[i];
+      console.log("🚀 ~ testAccountPage ~ testCase:", testCase);
+      await emailInput.clear();
+      await usernameInput.clear();
+      await studentIdInput.clear();
 
-      // Find and fill the input fields
-      const emailInput = await driver.findElement(By.name("email"));
       await emailInput.sendKeys(testCase.email);
-      const usernameInput = await driver.findElement(By.name("username"));
       await usernameInput.sendKeys(testCase.username);
-      const studentIdInput = await driver.findElement(By.name("student-id"));
       await studentIdInput.sendKeys(testCase.studentId);
 
       // Submit the form
-      await driver.findElement(By.name("save-btn")).click();
+      const submitBtn = await driver.findElement(By.css("button"));
+      await submitBtn.click();
 
-      // Wait for the error/success message
-      const errorMessage = await driver.wait(
-        until.elementLocated(By.css(".error-message, .success-message")),
-        5000
-      );
-
-      const errorText = await errorMessage.getText();
-      console.log(`Expected: "${testCase.expectedError}", Got: "${errorText}"`);
-
-      if (errorText !== testCase.expectedError) {
-        console.error(`❌ Test failed: ${testCase.scenario}`);
-      } else {
-        console.log(`✅ Test passed: ${testCase.scenario}`);
+      switch (i) {
+        case 0:
+          try {
+            await driver.wait(
+              until.elementLocated(By.id("invalid-email")),
+              3000
+            );
+            console.log("✅ Invalid Email");
+          } catch (error: any) {
+            console.error(`❌ Invalid email: ${error.message}`);
+          }
+          break;
+        case 1:
+          try {
+            await driver.wait(
+              until.elementLocated(By.id("username-taken")),
+              3000
+            );
+            console.log("✅ Username is taken Test Passed");
+          } catch (error: any) {
+            console.error(`❌ Username is taken Test Failed: ${error.message}`);
+          }
+          break;
+        case 2:
+          try {
+            await driver.wait(
+              until.elementLocated(By.id("student-id-taken")),
+              3000
+            );
+            console.log("✅ Student ID is taken Test Passed");
+          } catch (error: any) {
+            console.error(
+              `❌ Student ID is taken Test Failed: ${error.message}`
+            );
+          }
+          break;
+        case 3:
+          try {
+            await driver.wait(until.elementLocated(By.id("email-taken")), 3000);
+            console.log("✅ Email taken pass test");
+          } catch (error: any) {
+            console.error(`❌ Invalid email test Failed: ${error.message}`);
+          }
+          break;
+        default:
+          console.error(`❌ Test failed: ${testCase.scenario}`);
       }
     }
   } finally {

@@ -11,7 +11,7 @@ const App: FC = () => {
     const token = localStorage.getItem("token");
     if (token) {
       ContestantApi.getMe();
-      ContestantApi.getParticipatedContests();
+      // ContestantApi.getParticipatedContests();
     }
     const fetchSchoolYearList = async () => {
       await AffiliationApi.getList({ page: 1, limit: 100 });
