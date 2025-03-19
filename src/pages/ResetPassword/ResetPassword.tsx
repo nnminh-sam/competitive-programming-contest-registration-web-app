@@ -8,10 +8,13 @@ import Text from "../../components/Text";
 import Colors from "../../constants/color";
 import { AuthApi } from "../../services/auth";
 import "../SignIn/SignIn.scss";
+import { notification } from "antd";
 
 const ResetPassword: FC = () => {
   const nav = useNavigate();
+  const [resetPasswordToken, setResetPasswordToken] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const form = useFormik({
     initialValues: {
       password: "",
@@ -28,19 +31,30 @@ const ResetPassword: FC = () => {
     onSubmit: async (values) => {
       const res = await AuthApi.resetPassword({
         new_password: values.password,
-        token: new URLSearchParams(window.location.search).get("token") || "",
+        token: resetPasswordToken,
       });
       if (res) {
+        notification.success({
+          message:
+            "Your password has been reset! Please sign in with your new password",
+        });
         nav("/sign-in");
+        return;
       }
     },
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      nav("/");
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (!token) {
+      nav("/forgot-password");
+      return;
     }
+    setResetPasswordToken(token);
+    // const token = localStorage.getItem("token");
+    // if (token) {
+    //   nav("/");
+    // }
   }, [nav]);
 
   return (
