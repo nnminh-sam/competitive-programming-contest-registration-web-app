@@ -6,8 +6,8 @@ import Colors from "../../constants/color";
 import { useMemo } from "react";
 import Button from "../Button";
 import RegisterModal from "../Modal/RegisterModal";
-import { useRecoilValue } from "recoil";
-import ContestantAtom from "../../services/contestant/contestant.atom";
+// import { useRecoilValue } from "recoil";
+// import ContestantAtom from "../../services/contestant/contestant.atom";
 import { message } from "antd";
 
 export interface CardProps extends Partial<Contest> {
@@ -16,29 +16,34 @@ export interface CardProps extends Partial<Contest> {
 }
 
 const Card: FC<CardProps> = (props) => {
-  const { className, name, banner, duration, type, id, is_registered } = props;
+  const {
+    className,
+    name,
+    formal_name,
+    banner,
+    duration,
+    type,
+    id,
+    is_registered,
+  } = props;
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  const constestant = useRecoilValue(ContestantAtom.curentContestant);
+  // const constestant = useRecoilValue(ContestantAtom.curentContestant);
   const [isRegistered, setIsRegistered] = useState(false);
 
   const typeColors = useMemo(() => {
-    return type === "Team"
+    return type?.toLowerCase() === "team"
       ? "bg-green-600 text-white"
       : "bg-red-600 text-white";
   }, [type]);
 
   const handleSubmitContest = async () => {
-    if (type === "Single") {
-      ContestApi.registerSingle(id as string, constestant?.id as string).then(
-        (res) => {
-          if (res) {
-            setIsRegisterModalOpen(false);
-            setIsRegistered(true); // ✅ Update state after success
-            message.success("Register success");
-          }
-        }
-      );
-    }
+    ContestApi.participate(id as string).then((res) => {
+      if (res) {
+        setIsRegisterModalOpen(false);
+        setIsRegistered(true); // ✅ Update state after success
+        message.success("Register success");
+      }
+    });
   };
 
   return (
@@ -69,11 +74,12 @@ const Card: FC<CardProps> = (props) => {
         )}
 
         {/* Title Overlay */}
-        <div className="absolute bottom-[15%] mb-4 px-4 py-3 rounded-lg w-4/5 backdrop-blur-2xl">
+        <div className="absolute bottom-[15%] mb-4 px-4 py-3 rounded-lg backdrop-blur-2xl">
           <Text type="body-2" color={Colors.GREY_0} className="font-semibold">
-            {name}
+            {formal_name}
           </Text>
         </div>
+
         {!is_registered && !isRegistered && (
           <div className="absolute bottom-[3%]">
             <Button
@@ -90,9 +96,9 @@ const Card: FC<CardProps> = (props) => {
       <RegisterModal
         cancelLabel="Cancel"
         open={isRegisterModalOpen}
-        message={`Are you sure you want to register this ${type} contest?`}
-        title={`Register Contest ${name}`}
-        confirmLabel="Register"
+        message={`Are you sure you want to participate in ${name}?`}
+        title={`${name} Participation`}
+        confirmLabel="Participate"
         onClose={() => setIsRegisterModalOpen(false)}
         onConfirm={handleSubmitContest}
       />

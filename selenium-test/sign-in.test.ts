@@ -63,9 +63,7 @@ async function testSignIn() {
     await emailInput.sendKeys(SignInTest.WrongPassword.email);
     await passwordInput.sendKeys(SignInTest.WrongPassword.password);
     await signInButton.click();
-
     try {
-      // await driver.sleep(1000);
       await driver.wait(until.elementLocated(By.id("invalid-password")), 3000);
       console.log("✅ Wrong Password Test Passed");
     } catch {
@@ -78,15 +76,9 @@ async function testSignIn() {
     await emailInput.sendKeys(SignInTest.SignInSucess.email);
     await passwordInput.sendKeys(SignInTest.SignInSucess.password);
     await signInButton.click();
-    // Add this to your test
     try {
       await driver.sleep(2000);
-
-      await driver.wait(until.elementLocated(By.id("signed-in")), 10000); // Increase timeout to 10 seconds      // await driver.sleep(60000);
-      // driver.getCurrentUrl().then((url) => {
-      //   console.log("DEBUG >>> ", url);
-      // });
-      // await driver.wait(until.urlIs(`${BASE_URL}/`), 5000);
+      await driver.wait(until.elementLocated(By.id("signed-in")), 10000);
       console.log("✅ Sign-In Success Test Passed");
     } catch (error: any) {
       await driver
@@ -107,5 +99,4 @@ async function testSignIn() {
   }
 }
 
-// Run the test
 testSignIn();

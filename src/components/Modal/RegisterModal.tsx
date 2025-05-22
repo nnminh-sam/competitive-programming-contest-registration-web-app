@@ -54,7 +54,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
       ) : (
         <div className="flex flex-col gap-3 justify-center items-center">
           <div className="title-wrapper">
-            <h3 className="title">Notification</h3>
             <Icon
               name="close"
               size={20}

@@ -46,8 +46,6 @@ async function testSignUp() {
     await usernameInput.sendKeys(SignUpTest.UsernameTaken.username);
     await studentIdInput.sendKeys(SignUpTest.UsernameTaken.studentId);
     await signUpButton.click();
-
-    // Add more logging and increase timeout
     console.log("Waiting for username error message...");
     try {
       const errorElement = await driver.wait(
@@ -72,7 +70,6 @@ async function testSignUp() {
     await emailInput.clear();
     await usernameInput.clear();
     await studentIdInput.clear();
-
     await emailInput.sendKeys(SignUpTest.StudentIdTaken.email);
     await usernameInput.sendKeys(SignUpTest.StudentIdTaken.username);
     await passwordInput.sendKeys(SignUpTest.StudentIdTaken.password);

@@ -30,7 +30,6 @@ async function testAccountPage() {
       await usernameInput.sendKeys(testCase.username);
       await studentIdInput.sendKeys(testCase.studentId);
 
-      // Submit the form
       const submitBtn = await driver.findElement(By.css("button"));
       await submitBtn.click();
 

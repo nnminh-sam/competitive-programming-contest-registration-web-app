@@ -11,6 +11,8 @@ const getList = async (params: GetContestListPayload) => {
       params: {
         limit: limit,
         page: page,
+        order_by: "createdAt",
+        sort_by: "desc",
         ...rest,
       },
     });
@@ -39,14 +41,11 @@ const getDetail = async (id: string) => {
   }
 };
 
-const registerSingle = async (id: string, contestantId: string) => {
+const participate = async (id: string) => {
   try {
     const response = await Api({
       method: "POST",
-      url: `v1/contests/${id}/register-single`,
-      data: {
-        contestant_id: contestantId,
-      },
+      url: `v1/contests/${id}/participations`,
     });
     if (response.status < 300) {
       return response.data;
@@ -57,27 +56,8 @@ const registerSingle = async (id: string, contestantId: string) => {
   }
 };
 
-const registerTeam = async (id: string, teamId: string) => {
-  try {
-    const response = await Api({
-      method: "POST",
-      url: `v1/contests/${id}/register-team`,
-      data: {
-        team_id: teamId,
-      },
-    });
-    if (response.status === 200) {
-      return response.data;
-    }
-    message.error("Something went wrong.");
-  } catch (error: any) {
-    message.error(error.message);
-  }
-};
-
 export default {
   getList,
-  registerSingle,
-  registerTeam,
+  participate,
   getDetail,
 };
