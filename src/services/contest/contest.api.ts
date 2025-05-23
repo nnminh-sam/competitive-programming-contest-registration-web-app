@@ -56,8 +56,24 @@ const participate = async (id: string) => {
   }
 };
 
+const getParticipatedContests = async () => {
+  try {
+    const response = await Api({
+      method: "GET",
+      url: `v1/contests/participations`,
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+    message.error("Something went wrong.");
+  } catch (error: any) {
+    message.error(error.message);
+  }
+};
+
 export default {
   getList,
   participate,
   getDetail,
+  getParticipatedContests,
 };

@@ -6,13 +6,12 @@ import Colors from "../../constants/color";
 import { useMemo } from "react";
 import Button from "../Button";
 import RegisterModal from "../Modal/RegisterModal";
-// import { useRecoilValue } from "recoil";
-// import ContestantAtom from "../../services/contestant/contestant.atom";
 import { message } from "antd";
 
 export interface CardProps extends Partial<Contest> {
   className?: string;
   is_registered?: boolean;
+  onRegister?: () => void;
 }
 
 const Card: FC<CardProps> = (props) => {
@@ -25,9 +24,9 @@ const Card: FC<CardProps> = (props) => {
     type,
     id,
     is_registered,
+    onRegister,
   } = props;
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  // const constestant = useRecoilValue(ContestantAtom.curentContestant);
   const [isRegistered, setIsRegistered] = useState(false);
 
   const typeColors = useMemo(() => {
@@ -40,8 +39,9 @@ const Card: FC<CardProps> = (props) => {
     ContestApi.participate(id as string).then((res) => {
       if (res) {
         setIsRegisterModalOpen(false);
-        setIsRegistered(true); // ✅ Update state after success
+        setIsRegistered(true);
         message.success("Register success");
+        onRegister?.();
       }
     });
   };

@@ -4,20 +4,43 @@ import Sider from "antd/es/layout/Sider";
 import { isArray } from "lodash";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
 import Card from "../../components/Card/Card";
 import Text from "../../components/Text";
 import Colors from "../../constants/color";
 import { Contest, ContestApi } from "../../services/contest";
-import ContestantAtom from "../../services/contestant/contestant.atom";
 
 const Homepage: FC = () => {
   const [contestList, setContestList] = useState<Contest[]>([]);
-  const participatedContests = useRecoilValue(
-    ContestantAtom.participatedContests
+  const [participatedContests, setParticipatedContests] = useState<Contest[]>(
+    []
   );
+  const [allContests, setAllContests] = useState<Contest[]>([]);
 
   const nav = useNavigate();
+
+  const filterOutParticipatedContests = (
+    contests: Contest[],
+    participated: Contest[]
+  ) => {
+    return contests.filter(
+      (contest) => !participated.some((p) => p.id === contest.id)
+    );
+  };
+
+  const fetchParticipatedContests = async () => {
+    const response = await ContestApi.getParticipatedContests();
+    if (response?.data && isArray(response.data)) {
+      const newParticipatedContests: Contest[] = response.data;
+      setParticipatedContests(newParticipatedContests);
+
+      // Directly update contestList by filtering out the newly participated contest
+      setContestList((prevContestList) =>
+        prevContestList.filter(
+          (contest) => !newParticipatedContests.some((p) => p.id === contest.id)
+        )
+      );
+    }
+  };
 
   useEffect(() => {
     const fetchContestList = async () => {
@@ -26,11 +49,22 @@ const Homepage: FC = () => {
         limit: 10,
       });
       if (isArray(contestList)) {
-        setContestList(contestList);
+        setAllContests(contestList);
+        // Initial filter against current participated contests
+        setContestList(
+          filterOutParticipatedContests(contestList, participatedContests)
+        );
       }
     };
-    fetchContestList();
+    Promise.all([fetchContestList(), fetchParticipatedContests()]);
   }, []);
+
+  // Update contest list whenever allContests or participatedContests change
+  useEffect(() => {
+    setContestList(
+      filterOutParticipatedContests(allContests, participatedContests)
+    );
+  }, [allContests, participatedContests]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,20 +74,9 @@ const Homepage: FC = () => {
   }, [nav]);
 
   const handleSignOut = () => {
-    localStorage.removeItem("token"); // Remove token from localStorage
-    nav("/sign-in"); // Navigate to Sign In page
+    localStorage.removeItem("token");
+    nav("/sign-in");
   };
-
-  // Filtering the contests
-  const participatedContestIds = new Set(participatedContests.map((c) => c.id));
-
-  const participated = contestList.filter((contest) =>
-    participatedContestIds.has(contest.id)
-  );
-
-  const upcoming = contestList.filter(
-    (contest) => !participatedContestIds.has(contest.id)
-  );
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col px-6 py-8 gap-6">
@@ -107,7 +130,7 @@ const Homepage: FC = () => {
 
         <div className="bg-white flex-1 rounded-xl px-4 py-6">
           {/* Participated Contests Section */}
-          {participated.length > 0 && (
+          {participatedContests.length > 0 && (
             <>
               <Text
                 type="headline-4"
@@ -118,12 +141,13 @@ const Homepage: FC = () => {
               </Text>
 
               <div className="flex flex-wrap gap-4 justify-start mb-6">
-                {participated.map((contest) => (
+                {participatedContests.map((contest) => (
                   <Card
                     className="w-[30%]"
                     key={contest.id}
                     {...contest}
                     is_registered={true}
+                    onRegister={fetchParticipatedContests}
                   />
                 ))}
               </div>
@@ -131,7 +155,7 @@ const Homepage: FC = () => {
           )}
 
           {/* Upcoming Contests Section */}
-          {upcoming.length > 0 && (
+          {contestList.length > 0 && (
             <>
               <Text
                 type="headline-4"
@@ -141,12 +165,13 @@ const Homepage: FC = () => {
                 Upcoming Contests
               </Text>
               <div className="flex flex-wrap gap-4 justify-start">
-                {upcoming.map((contest) => (
+                {contestList.map((contest) => (
                   <Card
                     className="w-[30%]"
                     key={contest.id}
                     {...contest}
                     is_registered={false}
+                    onRegister={fetchParticipatedContests}
                   />
                 ))}
               </div>
