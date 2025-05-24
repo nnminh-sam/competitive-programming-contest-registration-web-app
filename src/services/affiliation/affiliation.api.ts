@@ -9,11 +9,14 @@ const getList = async (params: GetAffiliationListPayload) => {
     const res = await Api({
       method: "GET",
       url: "v1/affiliations",
-      params,
+      params: {
+        ...params,
+        orderBy: "name",
+        sortBy: "asc",
+      },
     });
 
     if (res.status < 300) {
-      console.log("🚀 ~ getList ~ res:", res)
       setRecoil(AffiliationAtom.affiliationList, res.data.data);
       return res.data.data;
     }

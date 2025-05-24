@@ -27,11 +27,10 @@ const Account: FC = () => {
     }
   }, [schoolyearList]);
   const [serverError, setServerError] = useState<string>("");
-  console.log("🚀 ~ serverError:", serverError);
 
   const form = useFormik<Contestant>({
     enableReinitialize: true,
-    initialValues: contestant as Contestant, // Force TypeScript to treat it as Contestant
+    initialValues: contestant as Contestant,
     validateOnChange: true,
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -55,18 +54,17 @@ const Account: FC = () => {
       return errors;
     },
     onSubmit: async (values) => {
-      ContestantApi.updateContestant(
-        contestant?.id as string,
-        values
-      ).then((res) => {
-        console.log("🚀 ~ ContestantApi.updateContestant ~ res:", res);
-        if (res.data) {
-          form.setSubmitting(false);
-          message.success("Update success");
-        } else {
-          setServerError(res);
+      console.log("🚀 ~ onSubmit: ~ values:", values);
+      ContestantApi.updateContestant(contestant?.id as string, values).then(
+        (res) => {
+          if (res.data) {
+            form.setSubmitting(false);
+            message.success("Update success");
+          } else {
+            setServerError(res);
+          }
         }
-      });
+      );
     },
   });
 
@@ -184,9 +182,16 @@ const Account: FC = () => {
                 className="w-[300px]"
                 bordered
                 label="School Year"
-                value={form.values?.school_year}
-                onChange={(value) => form.setFieldValue("school_year", value)}
-                error={form.errors.school_year}
+                value={form.values?.affiliation?.name}
+                onChange={(value) =>
+                  form.setFieldValue("affiliation", {
+                    id: value,
+                    name: schoolYearOptions?.find(
+                      (item) => item.value === value
+                    )?.label,
+                  })
+                }
+                error={form.errors.affiliation?.name}
                 options={schoolYearOptions}
               />
             </div>

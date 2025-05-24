@@ -20,8 +20,12 @@ const getMe = async () => {
 };
 
 const updateContestant = async (id: string, data: Partial<Contestant>) => {
+  console.log("🚀 ~ updateContestant ~ id:", id);
   try {
-    const res = await Api.patch(`v1/contestants/${id}`, data);
+    const res = await Api.patch(`v1/contestants`, {
+      ...data,
+      affiliation_id: data.affiliation?.id,
+    });
     if (res.status === 200) {
       return res.data;
     }

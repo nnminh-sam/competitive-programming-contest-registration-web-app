@@ -3,7 +3,6 @@ export interface Contestant {
   first_name: string;
   last_name: string;
   email: string;
-  school_year: string;
   student_id: string;
   gender: string;
   team_id?: string;
@@ -11,4 +10,8 @@ export interface Contestant {
   updated_at?: Date;
   deleted_at?: Date;
   username?: string;
+  affiliation: {
+    id: string;
+    name: string;
+  };
 }
