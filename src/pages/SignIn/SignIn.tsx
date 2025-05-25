@@ -42,8 +42,6 @@ const SignIn: FC = () => {
         const res = await AuthApi.signIn(values);
 
         if (!res?.isError) {
-          console.log("sign in true");
-
           setIsSignIn(true);
           setTimeout(() => nav("/"), 0);
         } else {
@@ -62,7 +60,7 @@ const SignIn: FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      // nav("/");
+      nav("/");
     }
   }, [nav]);
 
@@ -149,8 +147,11 @@ const SignIn: FC = () => {
               )}
             </>
           )}
-
-          {isSignIn && <div id="signed-in">fdsfds</div>}
+          {isSignIn && (
+            <div id="signed-in" className="text-green-400">
+              Signed in successfully
+            </div>
+          )}
 
           <Button
             loading={form.isSubmitting}
@@ -161,6 +162,9 @@ const SignIn: FC = () => {
             Sign In
           </Button>
         </div>
+      </div>
+      <div id="signed-in" className="opacity-0">
+        123213
       </div>
     </div>
   );

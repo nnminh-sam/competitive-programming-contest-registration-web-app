@@ -35,7 +35,7 @@ Api.interceptors.response.use(
       window.location.href = "/sign-in";
     }
     return Promise.reject(new Error(message));
-  },
+  }
 );
 
 export default Api;

@@ -1,111 +1,235 @@
 import { Builder, By, until, WebDriver } from "selenium-webdriver";
-import chrome from "selenium-webdriver/chrome";
 import { BASE_URL, SignUpTest } from "./test-input.config";
+import chrome from "selenium-webdriver/chrome";
+import { forceClearInput, sleep } from ".";
 
-// const BASE_URL = "http://localhost:5173"; // Change if needed
+// * Helper function to log test data
+const logTestData = (
+  testName: string,
+  data: {
+    email: string;
+    password: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    studentId?: string;
+    school_year?: string;
+  }
+) => {
+  console.log(`\n🔹 Running Test: ${testName}`);
+  console.log(`📧 Email: ${data.email}`);
+  console.log(`🔑 Password: ${data.password}`);
+  console.log(`👤 Username: ${data.username}`);
+  console.log(`👤 First Name: ${data.firstName}`);
+  console.log(`👤 Last Name: ${data.lastName}`);
+  if (data.studentId) console.log(`🎓 Student ID: ${data.studentId}`);
+  if (data.school_year) console.log(`📚 School Year: ${data.school_year}`);
+};
 
-async function testSignUp() {
-  let driver: WebDriver | undefined;
+async function setupDriver(): Promise<WebDriver> {
+  const options = new chrome.Options();
+  // options.addArguments("--headless");
+
+  return await new Builder()
+    .forBrowser("chrome")
+    .setChromeOptions(options)
+    .build();
+}
+
+async function findSignUpElements(driver: WebDriver) {
+  const emailInput = await driver.findElement(By.css('input[type="email"]'));
+  const passwordInput = await driver.findElement(
+    By.css('input[type="password"]')
+  );
+  const usernameInput = await driver.findElement(
+    By.css('input[name="username"]')
+  );
+  const firstNameInput = await driver.findElement(
+    By.css('input[name="first_name"]')
+  );
+  const lastNameInput = await driver.findElement(
+    By.css('input[name="last_name"]')
+  );
+  const studentIdInput = await driver.findElement(
+    By.css('input[name="student_id"]')
+  );
+  const genderSelect = await driver.findElement(By.id("gender"));
+  const schoolYearSelect = await driver.findElement(By.id("school_year"));
+  const signUpButton = await driver.findElement(
+    By.css("button[name='submit']")
+  );
+
+  return {
+    emailInput,
+    passwordInput,
+    usernameInput,
+    firstNameInput,
+    lastNameInput,
+    studentIdInput,
+    genderSelect,
+    schoolYearSelect,
+    signUpButton,
+  };
+}
+
+async function clearAndFillInputs(
+  elements: any,
+  data: {
+    email: string;
+    password: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    studentId: string;
+  }
+) {
+  await sleep(500);
+  await forceClearInput(elements.emailInput);
+  await forceClearInput(elements.passwordInput);
+  await forceClearInput(elements.usernameInput);
+  await forceClearInput(elements.firstNameInput);
+  await forceClearInput(elements.lastNameInput);
+  await forceClearInput(elements.studentIdInput);
+  await sleep(500);
+
+  await elements.emailInput.sendKeys(data.email);
+  await elements.passwordInput.sendKeys(data.password);
+  await elements.usernameInput.sendKeys(data.username);
+  await elements.firstNameInput.sendKeys(data.firstName);
+  await elements.lastNameInput.sendKeys(data.lastName);
+  await elements.studentIdInput.sendKeys(data.studentId);
+
+  await elements.genderSelect.click();
+  await sleep(300);
+  const genderOption = await elements.genderSelect.findElement(
+    By.xpath("/html/body/div[2]/div/div/div[2]/div/div/div/div[1]/div")
+  );
+  await genderOption.click();
+  await sleep(300);
+
+  await elements.schoolYearSelect.click();
+  await sleep(300);
+  const schoolYearOption = await elements.schoolYearSelect.findElement(
+    By.xpath("/html/body/div[3]/div/div/div[2]/div[1]/div/div/div[1]/div")
+  );
+  await sleep(300);
+  await schoolYearOption.click();
+  await sleep(500);
+}
+
+async function testInvalidEmail(driver: WebDriver, elements: any) {
+  logTestData("Invalid Email Format", SignUpTest.InvalidEmail);
+
+  await clearAndFillInputs(elements, SignUpTest.InvalidEmail);
+  await elements.signUpButton.click();
 
   try {
-    const options = new chrome.Options();
-    options.addArguments("--headless");
-
-    driver = await new Builder()
-      .forBrowser("chrome")
-      .setChromeOptions(options)
-      .build();
-    await driver.get(`${BASE_URL}/sign-up`);
-
-    const emailInput = await driver.findElement(By.name("email"));
-    const passwordInput = await driver.findElement(By.name("password"));
-    const usernameInput = await driver.findElement(By.name("username"));
-    const studentIdInput = await driver.findElement(By.name("student_id"));
-    const firstName = await driver.findElement(By.name("first_name"));
-    const lastName = await driver.findElement(By.name("last_name"));
-    console.log("🚀 ~ testSignUp ~ lastName:", lastName);
-    const schoolYear = await driver.findElement(By.id("school_year"));
-    console.log("🚀 ~ testSignUp ~ schoolYear:", schoolYear);
-    const signUpButton = await driver.findElement(By.css("button"));
-    console.log("✅ Element loaded");
-
-    // Test Case 1: Invalid email format
-    await emailInput.sendKeys(SignUpTest.InvalidEmail.email);
-    await signUpButton.click();
-    await driver.wait(until.elementLocated(By.id("invalid-email")), 5000);
+    await driver.wait(until.elementLocated(By.id("email-error")), 3000);
     console.log("✅ Invalid Email Test Passed");
-
-    // Test Case 2: Username is taken
-    await emailInput.clear();
-    await usernameInput.clear();
-    await studentIdInput.clear();
-    await emailInput.sendKeys(SignUpTest.UsernameTaken.email);
-    await passwordInput.sendKeys(SignUpTest.UsernameTaken.password);
-    await firstName.sendKeys(SignUpTest.UsernameTaken.firstName);
-    await lastName.sendKeys(SignUpTest.UsernameTaken.lastName);
-    await usernameInput.sendKeys(SignUpTest.UsernameTaken.username);
-    await studentIdInput.sendKeys(SignUpTest.UsernameTaken.studentId);
-    await signUpButton.click();
-    console.log("Waiting for username error message...");
-    try {
-      const errorElement = await driver.wait(
-        until.elementLocated(By.id("username-error")),
-        10000
-      );
-      const errorText = await errorElement.getText();
-      console.log("Found error message:", errorText);
-      console.log("✅ Username Taken Test Passed");
-    } catch (error) {
-      console.error("Failed to find username error message:", error);
-      // Try to get any error message that might be visible
-      const errorElements = await driver.findElements(By.css(".text-red-500"));
-      for (const element of errorElements) {
-        const text = await element.getText();
-        console.log("Found error message:", text);
-      }
-      throw error;
-    }
-
-    // Test Case 3: Student ID is taken
-    await emailInput.clear();
-    await usernameInput.clear();
-    await studentIdInput.clear();
-    await emailInput.sendKeys(SignUpTest.StudentIdTaken.email);
-    await usernameInput.sendKeys(SignUpTest.StudentIdTaken.username);
-    await passwordInput.sendKeys(SignUpTest.StudentIdTaken.password);
-    await firstName.sendKeys(SignUpTest.StudentIdTaken.firstName);
-    await lastName.sendKeys(SignUpTest.StudentIdTaken.lastName);
-    await studentIdInput.sendKeys(SignUpTest.StudentIdTaken.studentId);
-    await signUpButton.click();
-    await driver.wait(until.elementLocated(By.id("studentid-error")), 3000);
-    console.log("✅ Student ID Taken Test Passed");
-
-    // Test Case 4: Email is taken
-    await emailInput.clear();
-    await usernameInput.clear();
-    await studentIdInput.clear();
-    await emailInput.sendKeys(SignUpTest.EmailTaken.email);
-    await usernameInput.sendKeys(SignUpTest.EmailTaken.username);
-    await studentIdInput.sendKeys(SignUpTest.EmailTaken.studentId);
-    await signUpButton.click();
-    await driver.wait(until.elementLocated(By.id("email-taken-error")), 3000);
-    console.log("✅ Email Taken Test Passed");
-
-    // Test Case 5: Successful sign-up
-    await emailInput.clear();
-    await usernameInput.clear();
-    await studentIdInput.clear();
-    await emailInput.sendKeys(SignUpTest.SignUpSuccess.email);
-    await usernameInput.sendKeys(SignUpTest.SignUpSuccess.username);
-    await studentIdInput.sendKeys(SignUpTest.SignUpSuccess.studentId);
-    await signUpButton.click();
-    await driver.wait(until.urlIs(`${BASE_URL}`), 5000);
-    console.log("✅ Sign-Up Success Test Passed");
-  } catch (error) {
-    console.error("❌ Sign-up test failed:", error);
-  } finally {
-    await driver?.quit();
+  } catch {
+    console.error("❌ Invalid Email Test Failed: No error displayed");
   }
 }
 
+async function testUsernameTaken(driver: WebDriver, elements: any) {
+  logTestData("Username Already Taken", SignUpTest.UsernameTaken);
+
+  await clearAndFillInputs(elements, SignUpTest.UsernameTaken);
+  await elements.signUpButton.click();
+
+  try {
+    await driver.wait(until.elementLocated(By.id("username-error")), 3000);
+    console.log("✅ Username Taken Test Passed");
+  } catch {
+    console.error("❌ Username Taken Test Failed: No error displayed");
+  }
+}
+
+async function testStudentIdTaken(driver: WebDriver, elements: any) {
+  logTestData("Student ID Already Taken", SignUpTest.StudentIdTaken);
+
+  await clearAndFillInputs(elements, SignUpTest.StudentIdTaken);
+  await elements.signUpButton.click();
+
+  try {
+    await driver.wait(until.elementLocated(By.id("student-id-error")), 3000);
+    console.log("✅ Student ID Taken Test Passed");
+  } catch {
+    console.error("❌ Student ID Taken Test Failed: No error displayed");
+  }
+}
+
+async function testEmailTaken(driver: WebDriver, elements: any) {
+  logTestData("Email Already Taken", SignUpTest.EmailTaken);
+
+  await clearAndFillInputs(elements, SignUpTest.EmailTaken);
+  await elements.signUpButton.click();
+
+  try {
+    await driver.wait(until.elementLocated(By.id("email-taken-error")), 3000);
+    console.log("✅ Email Taken Test Passed");
+  } catch {
+    console.error("❌ Email Taken Test Failed: No error displayed");
+  }
+}
+
+async function testSuccessfulSignUp(driver: WebDriver, elements: any) {
+  logTestData("Successful Sign Up", SignUpTest.SignUpSuccess);
+
+  await clearAndFillInputs(elements, SignUpTest.SignUpSuccess);
+  await elements.signUpButton.click();
+
+  try {
+    await driver.sleep(1000);
+    const currentUrl = await driver.getCurrentUrl();
+    if (currentUrl === `${BASE_URL}/`) {
+      console.log("✅ Successfully navigated to home page");
+      console.log("✅ Sign-Up Success Test Passed");
+    } else {
+      throw new Error("Failed to navigate to home page");
+    }
+  } catch (error: any) {
+    console.error("❌ Sign-Up Success Test Failed:", error);
+  }
+}
+
+async function runTest(
+  testFn: (driver: WebDriver, elements: any) => Promise<void>,
+  testName: string
+) {
+  let driver: WebDriver | undefined;
+
+  try {
+    driver = await setupDriver();
+    await driver.get(`${BASE_URL}/sign-up`);
+    console.log(`🔹 Opened Sign-Up Page for ${testName}`);
+
+    const elements = await findSignUpElements(driver);
+    console.log("✅ Found Input Fields & Button");
+
+    await testFn(driver, elements);
+  } catch (error) {
+    console.error(`❌ Test execution error for ${testName}:`, error);
+  } finally {
+    if (driver) {
+      await sleep(2000);
+      await driver.quit();
+      console.log(`🔹 ${testName} Finished & Browser Closed`);
+    }
+  }
+}
+
+async function testSignUp() {
+  await runTest(testInvalidEmail, "Invalid Email Test");
+
+  await runTest(testUsernameTaken, "Username Taken Test");
+
+  await runTest(testStudentIdTaken, "Student ID Taken Test");
+
+  await runTest(testEmailTaken, "Email Taken Test");
+
+  await runTest(testSuccessfulSignUp, "Successful Sign Up Test");
+}
+
+// Run the test
 testSignUp();

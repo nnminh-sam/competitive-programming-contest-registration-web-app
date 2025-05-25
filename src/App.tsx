@@ -13,11 +13,13 @@ const App: FC = () => {
       ContestantApi.getMe();
       // ContestantApi.getParticipatedContests();
     }
-    const fetchSchoolYearList = async () => {
-      await AffiliationApi.getList({ page: 1, limit: 100 });
-    };
+    if (token) {
+      const fetchSchoolYearList = async () => {
+        await AffiliationApi.getList({ page: 1, limit: 100 });
+      };
 
-    fetchSchoolYearList();
+      fetchSchoolYearList();
+    }
   }, []);
 
   return (

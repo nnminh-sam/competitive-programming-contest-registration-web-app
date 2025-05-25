@@ -74,7 +74,7 @@ const Card: FC<CardProps> = (props) => {
         )}
 
         {/* Title Overlay */}
-        <div className="absolute bottom-[15%] mb-4 px-4 py-3 rounded-lg backdrop-blur-2xl">
+        <div className="absolute bottom-[15%] mb-4 px-4 py-3 rounded-lg backdrop-blur-2xl w-4/5 text-center">
           <Text type="body-2" color={Colors.GREY_0} className="font-semibold">
             {formal_name}
           </Text>

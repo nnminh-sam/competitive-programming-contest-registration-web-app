@@ -11,6 +11,7 @@ const signIn = async (payload: SignInPayload) => {
       url: "v1/auth/sign-in",
       data: payload,
     });
+    console.log("🚀 ~ signIn ~ res:", res);
     if (res.status < 300) {
       const token = res.data.data.jwt;
       if (token) {
@@ -31,11 +32,15 @@ const signIn = async (payload: SignInPayload) => {
 };
 
 const signUp = async (payload: SignUpPayload) => {
+  const data = {
+    ...payload,
+    affiliation_id: payload.school_year,
+  };
   try {
     const res = await Api({
       method: "POST",
       url: "v1/auth/sign-up",
-      data: payload,
+      data,
     });
 
     if (res.status < 300) {
@@ -68,9 +73,16 @@ const forgotPassword = async (email: string) => {
     if (res.status < 300) {
       return res.data.data;
     }
-    return false;
+    return {
+      isError: true,
+      message: "Failed to process forgot password request",
+    };
   } catch (error: any) {
     message.error(error.message);
+    return {
+      isError: true,
+      message: error.message,
+    };
   }
 };
 

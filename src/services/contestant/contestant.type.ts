@@ -1,3 +1,5 @@
+import { Team } from "../team";
+
 export interface Contestant {
   id: string;
   first_name: string;
@@ -14,4 +16,5 @@ export interface Contestant {
     id: string;
     name: string;
   };
+  team?: Team;
 }

@@ -1,27 +1,32 @@
 import { message } from "antd";
 import Api from "../api";
-import { GetTeamListPayload, Team } from "./team.type";
+import { Team, UpdateTeamPayload } from "./team.type";
 
-const getList = async (params: GetTeamListPayload) => {
+interface CreateTeamPayload {
+  name: string;
+  description: string;
+  members: [string, string, string]; // Fixed array of 3 email strings
+}
+
+const createTeam = async (data: CreateTeamPayload) => {
   try {
-    const { limit, page, ...rest } = params;
     const response = await Api({
-      method: "GET",
+      method: "POST",
       url: "v1/teams",
-      params: {
-        limit: limit,
-        page: page,
-        ...rest,
-      },
+      data,
     });
-    if (response.status === 200) {
-      return response.data;
+    if (response.status === 201) {
+      message.success("Team created successfully");
+      return { data: response.data, isError: false };
     }
-    message.error("Something went wrong.");
+    message.error("Failed to create team");
+    return { data: null, isError: true, message: response.data.message };
   } catch (error: any) {
     message.error(error.message);
+    return { data: null, isError: true, message: error.message };
   }
 };
+
 const getTeamDetail = async (id: string) => {
   try {
     const response = await Api({
@@ -37,10 +42,10 @@ const getTeamDetail = async (id: string) => {
   }
 };
 
-const updateTeam = async (id: string, data: Partial<Team>) => {
+const updateTeam = async (id: string, data: UpdateTeamPayload) => {
   try {
     const response = await Api({
-      method: "PUT",
+      method: "PATCH",
       url: `v1/teams/${id}`,
       data,
     });
@@ -69,9 +74,8 @@ const deleteTeam = async (id: string) => {
 };
 
 export default {
-  getList,
+  createTeam,
   getTeamDetail,
   updateTeam,
   deleteTeam,
 };
-

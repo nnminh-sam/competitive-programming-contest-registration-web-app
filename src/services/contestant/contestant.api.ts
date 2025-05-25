@@ -7,6 +7,7 @@ import ContestantAtom from "./contestant.atom";
 const getMe = async () => {
   try {
     const res = await Api.get("v1/contestants/me");
+    console.log("🚀 ~ getMe ~ res:", res);
     if (res.status === 200) {
       setRecoil(ContestantAtom.curentContestant, res.data.data);
       return res.data;
@@ -14,6 +15,7 @@ const getMe = async () => {
     message.error(res.data.message);
     return null;
   } catch (error: any) {
+    console.log("🚀 ~ getMe ~ error:", error.message);
     message.error(error.message);
     return null;
   }
@@ -27,13 +29,13 @@ const updateContestant = async (id: string, data: Partial<Contestant>) => {
       affiliation_id: data.affiliation?.id,
     });
     if (res.status === 200) {
-      return res.data;
+      return { data: res.data, isError: false };
     }
     message.error(res.data.message);
-    return null;
+    return { data: null, isError: true, message: res.data.message };
   } catch (error: any) {
     message.error(error.message);
-    return error.message;
+    return { data: null, isError: true, message: error.message };
   }
 };
 

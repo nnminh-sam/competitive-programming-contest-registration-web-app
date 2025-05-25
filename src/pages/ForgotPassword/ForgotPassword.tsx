@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
@@ -10,6 +10,7 @@ import "../SignIn/SignIn.scss";
 
 const ForgotPassword: FC = () => {
   const nav = useNavigate();
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   const form = useFormik({
     initialValues: {
@@ -18,16 +19,33 @@ const ForgotPassword: FC = () => {
     validate: (values) => {
       const errors: Record<string, string> = {};
 
-      if (!values.email) {
-        errors.email = "Required field";
-      }
+      // if (!values.email) {
+      //   errors.email = "Required field";
+      // } else if (
+      //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+      // ) {
+      //   errors.email = "Invalid email format";
+      // }
 
-      return errors;
+      // return errors;
     },
-    onSubmit: async (values) => {
-      const res = await AuthApi.forgotPassword(values.email);
-      if (res) {
-        nav(`/reset-password?token=${res.token}`);
+    onSubmit: async (values, { setSubmitting }) => {
+      setSuccessMessage("");
+      try {
+        const res = await AuthApi.forgotPassword(values.email);
+        
+        if (!res?.isError) {
+          setSuccessMessage("Password reset email sent successfully!");
+          setTimeout(() => {
+            nav(`/reset-password?token=${res.token}`);
+          }, 2000);
+        } else {
+          form.setErrors({ email: res.message || "Failed to send reset email" });
+        }
+      } catch (error: any) {
+        form.setErrors({ email: error.message || "An unexpected error occurred" });
+      } finally {
+        setSubmitting(false);
       }
     },
   });
@@ -68,7 +86,18 @@ const ForgotPassword: FC = () => {
             value={form.values.email}
             onChange={form.handleChange("email")}
             error={form.errors.email}
+            id="email-input"
           />
+
+          {successMessage ? (
+            <div id="success-message" className="text-green-500">
+              {successMessage}
+            </div>
+          ) : (
+            <div id="error-message" className="text-red-500">
+              {form.errors.email}
+            </div>
+          )}
 
           <div className="w-[300px] flex items-center justify-between -mt-4">
             <Text
@@ -87,7 +116,6 @@ const ForgotPassword: FC = () => {
           >
             Send Email
           </Button>
-          <div className="flex justify-between items-center"></div>
         </div>
       </div>
     </div>
